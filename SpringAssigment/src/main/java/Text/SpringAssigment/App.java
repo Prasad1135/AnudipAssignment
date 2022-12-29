@@ -1,4 +1,4 @@
-package Text.SpringAssignment;
+package Text.SpringAssigment;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -7,9 +7,11 @@ import Text.Entity.Agent;
 import Text.Entity.AgentDao;
 
 
-public class App {
-	public static void main(String[] args) {
-		ApplicationContext ap = new ClassPathXmlApplicationContext("config.xml");
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	ApplicationContext ap = new ClassPathXmlApplicationContext("config.xml");
 		AgentDao dao= (AgentDao) ap.getBean("Prasad");
 		System.out.println(dao.saveAgent(new Agent(1, "Prasad", 30000)));
 		System.out.println(dao.saveAgent(new Agent(2, "Priyanka", 60000)));
@@ -20,11 +22,11 @@ public class App {
 		System.out.println(dao.deleteAgent(new Agent(2)));
 	}
 }
-
+    
 
 /*
- 
- Insert Value Into Agent Table
+
+Insert Value Into Agent Table
 +----+----------+-----------+
 | id | name     | comission |
 +----+----------+-----------+
