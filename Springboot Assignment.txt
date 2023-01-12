@@ -1,0 +1,325 @@
+---------------------GroceriesApplication--------------------
+package com.example;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class GroceriesApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(GroceriesApplication.class, args);
+	}
+
+}
+
+---------------------GroceriesController---------------------------
+
+package com.example.Controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Model.Groceries;
+import com.example.Service.GroceriesService;
+
+//create RESTful web services using Spring MVC.
+@RestController
+public class GroceriesController {
+	
+	//connection with GroceriesService
+	@Autowired
+	GroceriesService groceriesService;
+	
+	//mapping HTTP POST requests onto specific handler methods.
+	@PostMapping("/groceries")
+	public Groceries createGroceries(@RequestBody Groceries groceries)
+	{
+		return groceriesService.createGroceries(groceries);
+		
+		
+	}
+
+	//mapping HTTP GET requests onto specific handler methods
+	@GetMapping("/groceries")
+	List<Groceries> findAllGroceries()
+	{
+		return groceriesService.findAllGroceries();
+		
+		
+	}
+	
+	
+	// maps HTTP DELETE requests onto specific handler methods.
+	@DeleteMapping("/groceries/{id}")
+	public String deleteGroceries(@PathVariable int id)
+	{
+		groceriesService.deleteGroceries(id);
+		return "Groceries deleted";
+		
+	}
+	
+	//mapping HTTP PUT requests onto specific handler methods
+	@PutMapping("/groceries")
+	public Groceries updateGroceries(@RequestBody Groceries groceries)
+	{
+		return groceriesService.updateGroceries(groceries);
+		
+		
+	}
+	
+	
+	@GetMapping("/groceries/id/{id}")
+	public List<Groceries> findByid(@PathVariable int id)
+	{
+		return groceriesService.findByid(id);
+		
+	}
+	
+	
+	@GetMapping("/groceries/name/{name}")
+	public List<Groceries> findByname(@PathVariable String name)
+	{
+		return groceriesService.findByname(name);
+		
+	}
+}
+
+------------------------------Groceries--------------------------------
+
+package com.example.Model;
+
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+//This annotation indicate this is table
+@Entity
+public class Groceries {
+	
+	//argument constructor
+	public Groceries(int id, String name, int price, int quantity) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.quantity = quantity;
+	}
+	
+	//No-agr constructor
+	public Groceries() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	//Getter and setter method of Groceries class variable
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getPrice() {
+		return price;
+	}
+	public void setPrice(int price) {
+		this.price = price;
+	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
+	//All are private variable
+	//primary key annotation
+	@Id
+	//id generate automaticly
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int id;
+	private String name;
+	private int price;
+	private int quantity;
+}
+
+--------------------------GroceriesRepository----------------------
+
+package com.example.Repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.Model.Groceries;
+//This repository extends JpaRepository interface 
+public interface GroceriesRepository extends JpaRepository<Groceries,Integer>{
+	
+			//Custom method
+			List<Groceries> findByid(int id);
+			List<Groceries> findByname(String name);
+}
+
+--------------------------GroceriesService-------------------------
+
+package com.example.Service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.Model.Groceries;
+
+//this annotation  marke this interface has service provider
+@Service
+public interface GroceriesService {
+	
+	//all are unimplemented method
+	Groceries createGroceries(Groceries groceries);
+	List<Groceries> findAllGroceries();
+	void deleteGroceries(int id);
+	Groceries updateGroceries(Groceries groceries);
+	List<Groceries> findByid(int id);
+	List<Groceries> findByname(String name);
+
+}
+
+-------------------------GroceriesServiceImpl---------------------
+
+package com.example.Service.Impl;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.example.Model.Groceries;
+import com.example.Repository.GroceriesRepository;
+import com.example.Service.GroceriesService;
+
+//to indicate that the class provides the mechanism for storage, retrieval, search, update and delete operation on objects.
+@Repository
+public class GroceriesServiceImpl implements GroceriesService {
+	
+	//connection with groceriesrepository
+	@Autowired
+	GroceriesRepository groceriesRepository;
+	
+	//all method of GroceriesService implemented by this class
+	@Override
+	
+	//create Groceries
+	public Groceries createGroceries(Groceries groceries) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.save(groceries) ;
+	}
+
+	@Override
+	
+	//find the all Groceries
+	public List<Groceries> findAllGroceries() {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findAll();
+	}
+
+	@Override
+	
+	//delete the Groceries
+	public void deleteGroceries(int id) {
+		// TODO Auto-generated method stub
+		groceriesRepository.deleteById(id);
+		
+	}
+
+	@Override
+	
+	//update the Groceries
+	public Groceries updateGroceries(Groceries groceries) {
+		// TODO Auto-generated method stub
+		Groceries _groceries=groceriesRepository.findById(groceries.getId()).get();
+		_groceries.setName(groceries.getName());
+		_groceries.setPrice(groceries.getPrice());
+		_groceries.setQuantity(groceries.getQuantity());
+		return groceriesRepository.save(_groceries) ;
+	}
+
+	@Override
+	
+	//find the groceries by id
+	public List<Groceries> findByid(int id) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findByid(id);
+	}
+
+	@Override
+	
+	//find the Groceries by name
+	public List<Groceries> findByname(String name) {
+		// TODO Auto-generated method stub
+		return groceriesRepository.findByname(name);
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+mysql> select * from groceries;
++----+-----------+-------+----------+
+| id | name      | price | quantity |
++----+-----------+-------+----------+
+|  1 | Tea Powde |   100 |        3 |
+|  2 | Rice      |   35  |        9 |
+|  3 | Sugar     |   40  |        6 |
+|  4 | ChanaDal  |   60  |        2 |
++----+-----------+-------+----------+
+4 rows in set (0.00 sec)
+ {
+        "id": 1,
+        "name": "Tea Powder",
+        "price": 100,
+        "quantity": 3
+    },
+    {
+        "id": 2,
+        "name": "Rice",
+        "price": 35,
+        "quantity": 9
+    },
+    {
+        "id": 3,
+        "name": "Sugar",
+        "price": 40,
+        "quantity": 6
+    },
+    {
+        "id": 4,
+        "name": "ChanaDal",
+        "price": 60,
+        "quantity": 2
+    }
+]
